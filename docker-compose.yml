@@ -9,7 +9,8 @@ services:
       DB_NAME: ${DB_NAME}
       DB_HOST: 'postgres'
       DB_PORT: '5432'
-      REDIS_URL: redis://192.168.0.7:6379
+      REDIS_HOST: '192.168.100.7'
+      REDIS_PORT: '6379'
     depends_on:
       - postgres
 

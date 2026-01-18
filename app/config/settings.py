@@ -9,7 +9,8 @@ class Settings(BaseSettings):
     DB_NAME: str
     DB_HOST: str
     DB_PORT: str
-    REDIS_URL: str
+    REDIS_HOST: str
+    REDIS_PORT: str
 
     @property
     def database_url_sync(self) -> str:
