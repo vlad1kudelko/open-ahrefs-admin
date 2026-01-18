@@ -10,3 +10,9 @@ dependencies = [
     "redis>=7.1.0",
     "sqlalchemy>=2.0.45",
 ]
+
+[dependency-groups]
+dev = [
+    "pre-commit>=4.5.1",
+    "pytest>=9.0.2",
+]
