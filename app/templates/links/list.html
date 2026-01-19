@@ -22,11 +22,11 @@
                 <tbody>
                     {% for link in links %}
                     <tr>
-                        <td>{{ link.status }}</td>
-                        <td>{{ link.url }}</td>
-                        <td>{{ link.referer }}</td>
-                        <td>{{ link.title or "—" }}</td>
-                        <td>{{ link.redirect_urls }}</td>
+                        <td class="truncate"                                 >{{ link.status        }}</td>
+                        <td class="truncate" title="{{ link.url           }}">{{ link.url           }}</td>
+                        <td class="truncate" title="{{ link.referer       }}">{{ link.referer       }}</td>
+                        <td class="truncate" title="{{ link.title         }}">{{ link.title or "—"  }}</td>
+                        <td class="truncate" title="{{ link.redirect_urls }}">{{ link.redirect_urls }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
