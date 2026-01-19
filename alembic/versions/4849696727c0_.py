@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 5ad8a256d2a4
+Revision ID: 4849696727c0
 Revises:
-Create Date: 2026-01-19 16:02:20.761812
+Create Date: 2026-01-19 16:33:33.797835
 
 """
 
@@ -14,7 +14,7 @@ from sqlalchemy.dialects import postgresql
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision: str = "5ad8a256d2a4"
+revision: str = "4849696727c0"
 down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -33,8 +33,8 @@ def upgrade() -> None:
             nullable=False,
         ),
         sa.Column("name", sa.Text(), nullable=False),
-        sa.PrimaryKeyConstraint("task_id"),
-        sa.UniqueConstraint("name"),
+        sa.PrimaryKeyConstraint("task_id", name=op.f("pk_tasks")),
+        sa.UniqueConstraint("name", name=op.f("uq_tasks_name")),
     )
     op.create_table(
         "links",
@@ -51,11 +51,14 @@ def upgrade() -> None:
         sa.Column("redirect_urls", postgresql.ARRAY(sa.Text()), nullable=False),
         sa.Column("referer", sa.Text(), nullable=False),
         sa.Column("task_id", sa.BigInteger(), nullable=False),
-        sa.ForeignKeyConstraint(
-            ["task_id"],
-            ["tasks.task_id"],
+        sa.CheckConstraint(
+            "(status >= 100 AND status < 600) OR status = 888 OR status = 999",
+            name=op.f("ck_links_status_valid"),
         ),
-        sa.PrimaryKeyConstraint("link_id"),
+        sa.ForeignKeyConstraint(
+            ["task_id"], ["tasks.task_id"], name=op.f("fk_links_task_id_tasks")
+        ),
+        sa.PrimaryKeyConstraint("link_id", name=op.f("pk_links")),
     )
     # ### end Alembic commands ###
 

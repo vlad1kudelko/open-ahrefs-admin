@@ -12,7 +12,15 @@ created_at = Annotated[
 
 
 class Base(DeclarativeBase):
-    pass
+    metadata = sa.MetaData(
+        naming_convention={
+            "ix": "ix_%(column_0_label)s",
+            "uq": "uq_%(table_name)s_%(column_0_name)s",
+            "ck": "ck_%(table_name)s_%(constraint_name)s",
+            "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
+            "pk": "pk_%(table_name)s",
+        }
+    )
 
 
 class Task(Base):
@@ -25,15 +33,16 @@ class Task(Base):
 
 class Link(Base):
     __tablename__ = "links"
+    __table_args__ = (
+        sa.CheckConstraint(
+            "(status >= 100 AND status < 600) OR status = 888 OR status = 999",
+            name="status_valid",
+        ),
+    )
     link_id: Mapped[int] = mapped_column(sa.BigInteger, primary_key=True)
     created_at: Mapped[created_at]
     url: Mapped[str] = mapped_column(sa.Text)
-    status: Mapped[int] = mapped_column(
-        sa.Integer,
-        sa.CheckConstraint(
-            "(status >= 100 AND status < 600) OR status = 888 OR status = 999"
-        ),
-    )
+    status: Mapped[int] = mapped_column(sa.Integer)
     title: Mapped[str | None] = mapped_column(sa.Text)
     redirect_urls: Mapped[list[str]] = mapped_column(ARRAY(sa.Text))
     referer: Mapped[str] = mapped_column(sa.Text)

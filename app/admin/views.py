@@ -11,7 +11,9 @@ class TaskAdmin(ModelView, model=Task):
         Task.created_at,
         Task.name,
     ]
-    form_excluded_columns = [Link.task_id, Link.created_at]
+    form_columns = [
+        Task.name,
+    ]
 
 
 class LinkAdmin(ModelView, model=Link):
@@ -27,5 +29,13 @@ class LinkAdmin(ModelView, model=Link):
         Link.redirect_urls,
         Link.referer,
         Link.task_id,
+        Link.task,
     ]
-    form_excluded_columns = [Link.link_id, Link.created_at]
+    form_columns = [
+        Link.url,
+        Link.status,
+        Link.title,
+        Link.redirect_urls,
+        Link.referer,
+        Link.task,
+    ]
