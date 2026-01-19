@@ -1,13 +1,15 @@
 import asyncio
 from contextlib import asynccontextmanager
 
+import redis.asyncio as redis
 from config.settings import settings
+from db.engine import async_session_factory
+from db.models import Link, Task
 from fastapi import APIRouter, FastAPI
-from redis import asyncio as aioredis
+from schemas.rlink import Rlink
+from sqlalchemy import select
 
-redis_client = aioredis.from_url(
-    f"redis://{settings.REDIS_HOST}:{settings.REDIS_PORT}", decode_responses=True
-)
+redis_client = redis.Redis(host=settings.REDIS_HOST, port=int(settings.REDIS_PORT))
 router = APIRouter()
 
 KEY_INPUT = "crawler:start_urls"
@@ -28,4 +30,26 @@ async def lifespan(app: FastAPI):
 
 
 async def redis_to_pg():
-    pass
+    while True:
+        redis_str = await redis_client.rpop(KEY_OUTPUT)
+        if redis_str:
+            rlink = Rlink.model_validate_json(redis_str)
+            async with async_session_factory() as session:
+                stmt = select(Task).where(Task.name == rlink.task)
+                result = await session.execute(stmt)
+                task = result.scalar_one_or_none()
+                if not task:
+                    task = Task(name=rlink.task)
+                    session.add(task)
+                    await session.flush()
+                link = Link(
+                    url=rlink.url,
+                    status=rlink.status,
+                    title=rlink.title,
+                    redirect_urls=rlink.redirect_urls,
+                    referer=rlink.referer,
+                    task_id=task.task_id,
+                )
+                session.add(link)
+                await session.commit()
+        await asyncio.sleep(0.1)
