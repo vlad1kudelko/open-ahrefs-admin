@@ -3,7 +3,7 @@ from typing import Annotated
 
 import sqlalchemy as sa
 from sqlalchemy.dialects.postgresql import ARRAY
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 created_at = Annotated[
     datetime,
@@ -20,6 +20,7 @@ class Task(Base):
     task_id: Mapped[int] = mapped_column(sa.BigInteger, primary_key=True)
     created_at: Mapped[created_at]
     name: Mapped[str] = mapped_column(sa.Text, unique=True)
+    link: Mapped["Link"] = relationship("Link", back_populates="task")
 
 
 class Link(Base):
@@ -37,3 +38,4 @@ class Link(Base):
     redirect_urls: Mapped[list[str]] = mapped_column(ARRAY(sa.Text))
     referer: Mapped[str] = mapped_column(sa.Text)
     task_id: Mapped[int] = mapped_column(sa.BigInteger, sa.ForeignKey("tasks.task_id"))
+    task: Mapped["Task"] = relationship("Task", back_populates="link")
