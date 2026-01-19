@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>My App</title>
+        <meta charset="utf-8">
+        <link href="https://cdn.jsdelivr.net/npm/daisyui@4.6.0/dist/full.min.css" rel="stylesheet" type="text/css" />
+        <script src="https://cdn.tailwindcss.com"></script>
+        <meta name="viewport" content="width=device-width">
+    </head>
+    <body>
+        <nav>
+            <a href="/">Home</a> | <a href="/links">Links</a>
+        </nav>
+        <hr>
+        {% block content %}{% endblock %}
+    </body>
+</html>

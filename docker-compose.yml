@@ -13,6 +13,8 @@ services:
       REDIS_PORT: ${REDIS_PORT}
     depends_on:
       - postgres
+    networks:
+      - open-ahrefs
 
   postgres:
     image: postgres
@@ -24,6 +26,8 @@ services:
       POSTGRES_DB: ${DB_NAME}
     volumes:
       - pg_data:/var/lib/postgresql
+    networks:
+      - open-ahrefs
 
   pgadmin:
     image: dpage/pgadmin4
@@ -36,7 +40,13 @@ services:
       - pgadmin_data:/var/lib/pgadmin
     depends_on:
       - postgres
+    networks:
+      - open-ahrefs
 
 volumes:
   pg_data:
   pgadmin_data:
+
+networks:
+  open-ahrefs:
+    external: true

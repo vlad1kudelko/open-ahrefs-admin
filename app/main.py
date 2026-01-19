@@ -1,16 +1,8 @@
-from contextlib import asynccontextmanager
-
+from admin.router import router as admin_router
 from fastapi import FastAPI
-
-#  from config.settings import settings
-#  from redis import Redis
-
-
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    yield
-
+from services.redis_worker import lifespan
+from services.redis_worker import router as redis_router
 
 app = FastAPI(lifespan=lifespan)
-
-#  rds = Redis(host=settings.REDIS_HOST, port=int(settings.REDIS_PORT), db=0)
+app.include_router(admin_router, prefix="/admin")
+app.include_router(redis_router, prefix="/redis")
