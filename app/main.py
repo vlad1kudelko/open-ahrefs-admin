@@ -1,15 +1,14 @@
-from fastapi import FastAPI
-import uvicorn
-from redis import Redis
+from contextlib import asynccontextmanager
+
 from config.settings import settings
+from fastapi import FastAPI
+from redis import Redis
 
-app = FastAPI()
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    yield
+
+
+app = FastAPI(lifespan=lifespan)
 rds = Redis(host=settings.REDIS_HOST, port=int(settings.REDIS_PORT), db=0)
-
-@app.get('/api/redis')
-def api_redis():
-    return rds.keys('*')
-
-@app.get('/api/test')
-def api_test(text: str):
-    return {'text': text}
