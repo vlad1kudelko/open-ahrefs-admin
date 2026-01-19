@@ -1,6 +1,7 @@
 from functools import lru_cache
 
-from pydantic_settings import BaseSettings
+from dotenv import find_dotenv
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
@@ -11,6 +12,8 @@ class Settings(BaseSettings):
     DB_PORT: str
     REDIS_HOST: str
     REDIS_PORT: str
+
+    model_config = SettingsConfigDict(env_file=find_dotenv())
 
     @property
     def database_url_sync(self) -> str:

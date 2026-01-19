@@ -9,8 +9,8 @@ services:
       DB_NAME: ${DB_NAME}
       DB_HOST: 'postgres'
       DB_PORT: '5432'
-      REDIS_HOST: '192.168.100.7'
-      REDIS_PORT: '6379'
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
     depends_on:
       - postgres
 
@@ -25,5 +25,18 @@ services:
     volumes:
       - pg_data:/var/lib/postgresql
 
+  pgadmin:
+    image: dpage/pgadmin4
+    ports:
+      - 8081:80
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "example@example.com"
+      PGADMIN_DEFAULT_PASSWORD: "example"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      - postgres
+
 volumes:
   pg_data:
+  pgadmin_data:
