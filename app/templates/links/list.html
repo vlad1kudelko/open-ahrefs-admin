@@ -1,6 +1,52 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>Hello from Links Page!</h1>
-    <p>Data from backend: {{ hello }}</p>
+<div class="card bg-base-100">
+    <div class="card-body">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="card-title text-2xl">Список ссылок</h2>
+            <div class="badge badge-secondary p-4">Всего: {{ total_count }}</div>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="table table-zebra table-xs table-fixed w-full">
+                <thead>
+                    <tr class="bg-base-200">
+                        <td class="w-20">status</td>
+                        <td>url</td>
+                        <td>referer</td>
+                        <td>title</td>
+                        <td>redirect_urls</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for link in links %}
+                    <tr>
+                        <td>{{ link.status }}</td>
+                        <td>{{ link.url }}</td>
+                        <td>{{ link.referer }}</td>
+                        <td>{{ link.title or "—" }}</td>
+                        <td>{{ link.redirect_urls }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="flex justify-center mt-4">
+            <div class="join">
+                {# Кнопка Назад #}
+                <a href="?page={{ page - 1 }}&size={{ size }}" 
+                   class="join-item btn {% if page <= 1 %}btn-disabled{% endif %}">«</a>
+                
+                {# Текущая страница #}
+                <button class="join-item btn btn-active">Страница {{ page }} из {{ total_pages }}</button>
+                
+                {# Кнопка Вперед #}
+                <a href="?page={{ page + 1 }}&size={{ size }}" 
+                   class="join-item btn {% if page >= total_pages %}btn-disabled{% endif %}">»</a>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
