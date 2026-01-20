@@ -9,9 +9,33 @@
         <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     </head>
     <body class="min-h-screen bg-base-300">
-        <div class="navbar bg-base-100">
-            <div class="flex-1">
-                <a href="/" class="btn btn-ghost text-xl text-primary">Open Ahrefs</a>
+        <div class="navbar bg-base-100 px-4">
+            <div class="navbar-start">
+                <a href="/" class="btn btn-ghost text-xl text-primary px-0">Open Ahrefs</a>
+            </div>
+
+            <div class="navbar-center hidden lg:flex w-full max-w-md">
+                <form action="/redis/addurl" method="POST" class="join w-full">
+                    <input 
+                        name="url"
+                        type="url" 
+                        placeholder="Добавить URL в очередь..." 
+                        class="input input-bordered join-item w-full focus:outline-none" 
+                        required
+                        />
+                    <button type="submit" class="btn btn-primary join-item">
+                        <i class="fa-solid fa-plus"></i>
+                    </button>
+                </form>
+            </div>
+
+            <div class="navbar-end">
+                <form action="/redis/clearall" method="POST" onsubmit="return confirm('Вы уверены, что хотите очистить все данные?');">
+                    <button type="submit" class="btn btn-error btn-outline btn-sm sm:btn-md gap-2">
+                        <i class="fa-solid fa-trash-can"></i>
+                        <span class="hidden sm:inline">Очистить всё</span>
+                    </button>
+                </form>
             </div>
         </div>
 

@@ -5,8 +5,8 @@ import redis.asyncio as redis
 from config.settings import settings
 from db.engine import async_session_factory, get_session
 from db.models import Link, Task
-from fastapi import APIRouter, Depends, FastAPI
-from pydantic import BaseModel
+from fastapi import APIRouter, Depends, FastAPI, Form
+from fastapi.responses import RedirectResponse
 from schemas.rlink import Rlink
 from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -27,17 +27,13 @@ async def router_clearall(db: AsyncSession = Depends(get_session)):
     await db.execute(delete(Link))
     await db.execute(delete(Task))
     await db.commit()
-    return "ok"
-
-
-class UrlRequest(BaseModel):
-    url: str
+    return RedirectResponse(url="/", status_code=303)
 
 
 @router.post("/addurl")
-async def router_addurl(item: UrlRequest):
-    await redis_client.lpush(KEY_INPUT, item.url)
-    return "ok"
+async def router_addurl(url: str = Form()):
+    await redis_client.lpush(KEY_INPUT, url)
+    return RedirectResponse(url="/", status_code=303)
 
 
 @asynccontextmanager
