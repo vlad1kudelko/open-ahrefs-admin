@@ -21,7 +21,7 @@ KEY_OUTPUT = "crawler:items"
 @router.post("/clearall")
 async def router_clearall(db: AsyncSession = Depends(get_session)):
     await redis_client.delete("crawler:start_urls")
-    await redis_client.delete("crawler:dupefilter")
+    await redis_client.delete("crawler:bloomfilter")
     await redis_client.delete("crawler:requests")
     await redis_client.delete("crawler:items")
     await db.execute(delete(Link))
