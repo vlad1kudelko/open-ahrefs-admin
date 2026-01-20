@@ -22,7 +22,7 @@
                 <tbody>
                     {% for link in links %}
                     <tr>
-                        <td class="truncate"                                 >{{ link.status        }}</td>
+                        <td class="{% if link.status == 200 %}bg-success{% endif %}">{{ link.status }}</td>
                         <td class="truncate" title="{{ link.url           }}">{{ link.url           }}</td>
                         <td class="truncate" title="{{ link.referer       }}">{{ link.referer       }}</td>
                         <td class="truncate" title="{{ link.title         }}">{{ link.title or "—"  }}</td>

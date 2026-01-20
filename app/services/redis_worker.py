@@ -3,17 +3,30 @@ from contextlib import asynccontextmanager
 
 import redis.asyncio as redis
 from config.settings import settings
-from db.engine import async_session_factory
+from db.engine import async_session_factory, get_session
 from db.models import Link, Task
-from fastapi import APIRouter, FastAPI
+from fastapi import APIRouter, Depends, FastAPI
 from schemas.rlink import Rlink
-from sqlalchemy import select
+from sqlalchemy import delete, select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 redis_client = redis.Redis(host=settings.REDIS_HOST, port=int(settings.REDIS_PORT))
 router = APIRouter()
 
 KEY_INPUT = "crawler:start_urls"
 KEY_OUTPUT = "crawler:items"
+
+
+@router.get("/clearall")
+async def router_clearall(db: AsyncSession = Depends(get_session)):
+    await redis_client.delete("crawler:start_urls")
+    await redis_client.delete("crawler:dupefilter")
+    await redis_client.delete("crawler:requests")
+    await redis_client.delete("crawler:items")
+    await db.execute(delete(Link))
+    await db.execute(delete(Task))
+    await db.commit()
+    return "ok"
 
 
 @router.get("/addurl")
