@@ -46,7 +46,7 @@ docker-compose up --build
 
 - `DB_USER`
 - `DB_PASS`
-- `DB_NAME`
+- `DB_NAME` (имя базы данных)
 - `DB_HOST`
 - `DB_PORT`
 - `REDIS_HOST`
