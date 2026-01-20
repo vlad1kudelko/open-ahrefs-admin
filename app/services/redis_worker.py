@@ -45,30 +45,45 @@ async def lifespan(app: FastAPI):
 
 async def redis_to_pg():
     while True:
+        items = []
         try:
-            redis_str = await redis_client.rpop(KEY_OUTPUT)
+            for _ in range(100):
+                item = await redis_client.rpop(KEY_OUTPUT)
+                if not item:
+                    break
+                items.append(item)
         except Exception:
             print("Redis не отвечает, ожидание...")
             await asyncio.sleep(1)
             continue
-        if redis_str:
-            rlink = Rlink.model_validate_json(redis_str)
-            async with async_session_factory() as session:
-                stmt = select(Task).where(Task.name == rlink.task)
-                result = await session.execute(stmt)
-                task = result.scalar_one_or_none()
-                if not task:
-                    task = Task(name=rlink.task)
-                    session.add(task)
-                    await session.flush()
-                link = Link(
-                    url=rlink.url,
-                    status=rlink.status,
-                    title=rlink.title,
-                    redirect_urls=rlink.redirect_urls,
-                    referer=rlink.referer,
-                    task_id=task.task_id,
+        if not items:
+            await asyncio.sleep(1)
+            continue
+        rlinks = [Rlink.model_validate_json(i) for i in items]
+        async with async_session_factory() as session:
+            task_names = list(set(r.task for r in rlinks))
+            stmt = select(Task).where(Task.name.in_(task_names))
+            result = await session.execute(stmt)
+            existing_tasks = {t.name: t for t in result.scalars().all()}
+            for name in task_names:
+                if name not in existing_tasks:
+                    new_task = Task(name=name)
+                    session.add(new_task)
+                    existing_tasks[name] = new_task
+            if session.new:
+                await session.flush()
+            links_to_add = [
+                Link(
+                    url=r.url,
+                    status=r.status,
+                    title=r.title,
+                    redirect_urls=r.redirect_urls,
+                    referer=r.referer,
+                    task_id=existing_tasks[r.task].task_id,
                 )
-                session.add(link)
-                await session.commit()
+                for r in rlinks
+            ]
+            session.add_all(links_to_add)
+            await session.commit()
+        print(f"Обработано записей: {len(items)}")
         await asyncio.sleep(0.1)
