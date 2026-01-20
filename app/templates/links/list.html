@@ -5,7 +5,12 @@
     <div class="card-body">
         <div class="flex justify-between items-center mb-4">
             <h2 class="card-title text-2xl">Список ссылок</h2>
-            <div class="badge badge-secondary p-4">Всего: {{ total_count }}</div>
+            <div class="flex items-center gap-2">
+                <button onclick="window.location.reload();" class="btn btn-circle btn-ghost btn-sm">
+                    <i class="fa-solid fa-rotate-right text-lg"></i>
+                </button>
+                <div class="badge badge-secondary p-4">Всего: {{ total_count }}</div>
+            </div>
         </div>
 
         <div class="overflow-x-auto">
