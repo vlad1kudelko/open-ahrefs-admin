@@ -45,7 +45,12 @@ async def lifespan(app: FastAPI):
 
 async def redis_to_pg():
     while True:
-        redis_str = await redis_client.rpop(KEY_OUTPUT)
+        try:
+            redis_str = await redis_client.rpop(KEY_OUTPUT)
+        except Exception:
+            print("Redis не отвечает, ожидание...")
+            await asyncio.sleep(1)
+            continue
         if redis_str:
             rlink = Rlink.model_validate_json(redis_str)
             async with async_session_factory() as session:
