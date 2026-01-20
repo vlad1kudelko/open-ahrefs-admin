@@ -14,7 +14,7 @@ templates = Jinja2Templates(directory="templates")
 async def router_links(
     request: Request,
     page: int = Query(1, ge=1),
-    size: int = Query(50, ge=1, le=100),
+    size: int = Query(50, ge=1, le=500),
     db: AsyncSession = Depends(get_session),
 ):
     # 1. Рассчитываем отступ
