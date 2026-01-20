@@ -6,6 +6,7 @@ from config.settings import settings
 from db.engine import async_session_factory, get_session
 from db.models import Link, Task
 from fastapi import APIRouter, Depends, FastAPI
+from pydantic import BaseModel
 from schemas.rlink import Rlink
 from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -17,7 +18,7 @@ KEY_INPUT = "crawler:start_urls"
 KEY_OUTPUT = "crawler:items"
 
 
-@router.get("/clearall")
+@router.post("/clearall")
 async def router_clearall(db: AsyncSession = Depends(get_session)):
     await redis_client.delete("crawler:start_urls")
     await redis_client.delete("crawler:dupefilter")
@@ -29,9 +30,13 @@ async def router_clearall(db: AsyncSession = Depends(get_session)):
     return "ok"
 
 
-@router.get("/addurl")
-async def router_addurl(url: str):
-    await redis_client.lpush(KEY_INPUT, url)
+class UrlRequest(BaseModel):
+    url: str
+
+
+@router.post("/addurl")
+async def router_addurl(item: UrlRequest):
+    await redis_client.lpush(KEY_INPUT, item.url)
     return "ok"
 
 
